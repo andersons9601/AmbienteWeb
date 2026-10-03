@@ -3,11 +3,11 @@ const { Pool } = require('pg');
 
 // Configuração do pool de conexões
 const pool = new Pool({
-    host: 'db', // Nome do serviço do PostgreSQL no docker-compose.yml
-    user: 'postgres',
-    password: 'senha_segura',
-    database: 'meu_banco',
-    port: 5432,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
 });
 
 const server = http.createServer(async (req, res) => {
