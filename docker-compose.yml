@@ -4,3 +4,13 @@ services:
     build: .
     ports:
       - "3000:3000"
+
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: senha_segura
+      POSTGRES_DB: meu_banco
