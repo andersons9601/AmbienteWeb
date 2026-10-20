@@ -1,6 +1,7 @@
 const http = require('http');
 const express = require('express');
 const { Pool } = require('pg');
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
@@ -14,30 +15,31 @@ const pool = new Pool({
     port: process.env.DB_PORT,
 });
 
-const server = http.createServer(async (req, res) => {
-    if (req.url === '/db') {
-        try {
-            // Consulta a hora atual do servidor PostgreSQL
-            const result = await pool.query('SELECT NOW()');
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({
-                mensagem: 'Conectado ao PostgreSQL com sucesso!',
-                horarioBanco: result.rows[0].now
-            }));
-        } catch (err) {
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Erro na conexão com o banco: ' + err.message);
-        }
-    } else {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('API do AmbienteWeb rodando com sucesso!');
+
+// Rota principal (mensagem de boas-vindas)
+app.get('/', (req, res) => {
+    res.send('API do AmbienteWeb rodando com sucesso!');
+});
+
+// Rota para testar a conexão com o banco de dados
+app.get('/db', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT NOW()');
+        res.json({
+            mensagem: 'Conectado ao PostgreSQL com sucesso!',
+            horarioBanco: result.rows[0].now
+        });
+    } catch (err) {
+        res.status(500).send('Erro na conexão com o banco: ' + err.message);
     }
 });
 
+// Inicialização do servidor utilizando o Express
 const PORT = 3000;
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
+
 
 app.get('/usuarios', async (req, res) => {
     try {
