@@ -54,6 +54,9 @@ app.get('/usuarios', async (req, res) => {
 app.post('/usuarios', async (req, res) => {
     try {
         const { nome, email } = req.body;
+        if (!nome || !email) {
+            return res.status(400).json({ erro: 'Nome e email são obrigatórios' });
+        }
         const resultado = await pool.query(
             'INSERT INTO usuarios (nome, email) VALUES ($1, $2) RETURNING *',
             [nome, email]
@@ -69,6 +72,9 @@ app.put('/usuarios/:id', async (req, res) => {
     try {
         const { id } = req.params; // Pega o ID passado na URL
         const { nome, email } = req.body; // Pega os novos dados do corpo da requisição
+        if (!nome || !email) {
+            return res.status(400).json({ erro: 'Nome e email são obrigatórios' });
+        }
 
         const resultado = await pool.query(
             'UPDATE usuarios SET nome = $1, email = $2 WHERE id = $3 RETURNING *',
